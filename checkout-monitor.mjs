@@ -317,6 +317,7 @@ function diffAgainstBaseline(name, snapshot, baseline) {
   return findings;
 }
 
+
 async function sendAlert(findings) {
   const message =
     ':rotating_light: Checkout monitor on ' +
@@ -328,27 +329,50 @@ async function sendAlert(findings) {
 
   console.error(message);
 
-  if (WEBHOOK) {
-    try {
-      const response = await fetch(WEBHOOK, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: message,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error(
-          `Alert delivery failed: webhook returned HTTP ${response.status}`
-        );
-      }
-    } catch (error) {
-      console.error('Alert delivery failed:', error.message);
-    }
+  if (!WEBHOOK) {
+    console.error('Alert delivery failed: ALERT_WEBHOOK is missing.');
+    return false;
   }
+
+  try {
+    const response = await fetch(WEBHOOK, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: message,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(
+        `Alert delivery failed: webhook returned HTTP ${response.status}`
+      );
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Alert delivery failed:', error.message);
+    return false;
+  }
+}
+
+if (process.argv.includes('--test-alert')) {
+  const delivered = await sendAlert([
+    {
+      level: 'TEST',
+      msg: 'Manual Slack alert test succeeded. Checkout monitoring was not run.',
+    },
+  ]);
+
+  if (!delivered) {
+    process.exit(1);
+  }
+
+  console.log('SUCCESS: Test alert accepted by Slack.');
+  process.exit(0);
 }
 
 const browser = await chromium.launch({

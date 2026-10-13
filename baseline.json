@@ -1,0 +1,58 @@
+{
+  "desktop": {
+    "scriptHosts": [
+      "bat.bing.com",
+      "cdn.shopify.com",
+      "cdn.starapps.studio",
+      "checkout.pci.shopifyinc.com",
+      "checkout.shopify.com",
+      "connect.facebook.net",
+      "d1liekpayvooaz.cloudfront.net",
+      "d2wy8f7a9ursnm.cloudfront.net",
+      "davekny.com",
+      "go.affec.tv",
+      "googleads.g.doubleclick.net",
+      "pay.google.com",
+      "static-tracking.klaviyo.com",
+      "static.klaviyo.com",
+      "widget.trustpilot.com",
+      "www.googletagmanager.com",
+      "www.gstatic.com",
+      "www.paypal.com",
+      "www.youtube.com"
+    ],
+    "buttonTargets": [
+      "BUTTON||/cart",
+      "FORM||/cart",
+      "FORM||/cart/add"
+    ]
+  },
+  "mobile": {
+    "scriptHosts": [
+      "bat.bing.com",
+      "cdn.shopify.com",
+      "cdn.starapps.studio",
+      "checkout.pci.shopifyinc.com",
+      "checkout.shopify.com",
+      "connect.facebook.net",
+      "d1liekpayvooaz.cloudfront.net",
+      "d2wy8f7a9ursnm.cloudfront.net",
+      "davekny.com",
+      "go.affec.tv",
+      "googleads.g.doubleclick.net",
+      "pay.google.com",
+      "static-tracking.klaviyo.com",
+      "static.klaviyo.com",
+      "widget.trustpilot.com",
+      "www.googletagmanager.com",
+      "www.gstatic.com",
+      "www.paypal.com",
+      "www.youtube.com"
+    ],
+    "buttonTargets": [
+      "BUTTON||/cart",
+      "FORM||/cart",
+      "FORM||/cart/add"
+    ]
+  }
+}

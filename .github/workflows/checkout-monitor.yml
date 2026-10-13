@@ -1,0 +1,43 @@
+
+name: Davek Checkout Monitor
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: davek-checkout-monitor
+  cancel-in-progress: false
+
+jobs:
+  checkout-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run checkout monitor
+        env:
+          STORE_URL: ${{ vars.STORE_URL }}
+          PRODUCT_PATH: ${{ vars.PRODUCT_PATH }}
+          ALLOWED_CHECKOUT_HOSTS: ${{ vars.ALLOWED_CHECKOUT_HOSTS }}
+          ALERT_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
+        run: node checkout-monitor.mjs

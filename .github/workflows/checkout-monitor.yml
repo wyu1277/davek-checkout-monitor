@@ -5,6 +5,12 @@ on:
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
+    inputs:
+      test_alert:
+        description: "Send a Slack test alert instead of checking checkout"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -35,9 +41,19 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run checkout monitor
+        if: ${{ inputs.test_alert != true }}
         env:
           STORE_URL: ${{ vars.STORE_URL }}
           PRODUCT_PATH: ${{ vars.PRODUCT_PATH }}
           ALLOWED_CHECKOUT_HOSTS: ${{ vars.ALLOWED_CHECKOUT_HOSTS }}
           ALERT_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
         run: node checkout-monitor.mjs
+
+      - name: Send manual Slack test alert
+        if: ${{ inputs.test_alert == true && github.event_name == 'workflow_dispatch' }}
+        env:
+          STORE_URL: ${{ vars.STORE_URL }}
+          PRODUCT_PATH: ${{ vars.PRODUCT_PATH }}
+          ALLOWED_CHECKOUT_HOSTS: ${{ vars.ALLOWED_CHECKOUT_HOSTS }}
+          ALERT_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
+        run: node checkout-monitor.mjs --test-alert

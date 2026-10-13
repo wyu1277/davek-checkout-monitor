@@ -1,0 +1,37 @@
+
+name: Test Slack Webhook
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-slack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send test message to Slack
+        env:
+          SLACK_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK" ]; then
+            echo "ERROR: ALERT_WEBHOOK secret is missing or empty."
+            exit 1
+          fi
+
+          RESPONSE=$(curl -sS -w "\n%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            --data '{"text":"Test alert: Davek checkout monitor Slack webhook is working."}' \
+            "$SLACK_WEBHOOK")
+
+          STATUS=$(echo "$RESPONSE" | tail -n 1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Slack HTTP status: $STATUS"
+          echo "Slack response: $BODY"
+
+          if [ "$STATUS" != "200" ] || [ "$BODY" != "ok" ]; then
+            echo "ERROR: Slack did not accept the test message."
+            exit 1
+          fi
+
+          echo "SUCCESS: Slack accepted the test message."
